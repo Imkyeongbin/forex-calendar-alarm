@@ -73,12 +73,14 @@ class SettingsManager:
 
 
     def create_save_button(self):
-        save_button = ttk.Button(self.root, text="Save", command=self.save_settings)
-        save_button.pack(side='bottom', pady=10)
-        # 색상 지정을 위한 스타일 설정 (예시: 파란색 배경, 흰색 글씨)
+        # 버튼 가시성을 위한 스타일 설정
         style = ttk.Style()
-        style.configure("Save.TButton", background="blue", foreground="white")
-        save_button.configure(style="Save.TButton")
+        style.configure("Save.TButton", background="blue", foreground="black")
+
+        # 스타일이 적용된 Save 버튼 생성
+        save_button = ttk.Button(self.root, text="Save", command=self.save_settings, style="Save.TButton")
+        save_button.pack(side='bottom', pady=10)
+
 
     def save_settings(self):
         selected_countries = [country for country, var in self.vars.items() if var.get()]
