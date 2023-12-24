@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+import tkinter.font as tkFont
 import sys
 import yaml
 
@@ -25,13 +26,23 @@ class SettingsManager:
         self.create_save_button()  # save 버튼 생성 함수 추가
 
     def create_checkboxes(self):
+        # 가장 긴 region 문자열의 길이를 찾습니다.
+        max_length = max(len(region) for region in self.regions)
+
+        # 볼드체 글꼴을 설정합니다.
+        bold_font = tkFont.Font(weight="bold")
+
         for region, countries in self.regions.items():
             region_frame = ttk.Frame(self.root)
             region_frame.pack(side='top', fill='x', expand=True, padx=10, pady=5)
-            label = ttk.Label(region_frame, text=region, anchor='w')
+
+            # 레이블에 볼드체 글꼴을 적용합니다.
+            label = ttk.Label(region_frame, text=region, anchor='w', font=bold_font, width=max_length)
             label.pack(side='left', padx=5)
+
             countries_frame = ttk.Frame(region_frame)
             countries_frame.pack(side='left', fill='x', expand=True, padx=5)
+
             for country in countries:
                 country_value = country.split(sep=" ")[1]
                 var = tk.BooleanVar(value=country_value in self.default_selected_countries)
@@ -39,6 +50,7 @@ class SettingsManager:
                 cb.pack(side='left', padx=2, pady=2)
                 self.checkboxes[country_value] = cb
                 self.vars[country_value] = var
+
 
     def create_confirm_and_cancel_buttons(self):
         button_frame = ttk.Frame(self.root)

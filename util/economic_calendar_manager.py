@@ -18,6 +18,58 @@ class EconomicCalendarManager:
         messagebox.showinfo("No Events", "오늘, 내일 중에 일어나는 이벤트가 없습니다.")
         root.attributes('-topmost', False)  
         root.destroy()  # 루트 창을 파괴하여 메모리를 해제합니다.
+        
+    # def check_countries(self, selected_countries):
+    #     # 혹시 모를 문자 차이에 대비해 selected_countries 요소를 전부 소문자로 변경함.
+    #     selected_countries_lowercase_list = [item.lower() for item in selected_countries]
+        
+    #     country_region_tab_selector = '.dfx-calendarTopBar__filterFull > .dfx-calendarTopBar__multipleCheckboxesWithIconFilterCheckboxes'
+    #     self.page.wait_for_selector(selector=country_region_tab_selector, state='attached')
+    #     print('찾았네염')
+    #     # 일단 컨트리/리전 탭 셀렉터를 통해 페이지에서 컨트리/리전 탭을 선택하여 변수에 할당함.
+    #     country_region_tab = self.page.query_selector(country_region_tab_selector)
+    #     self.page.get_by_role
+        
+    #     # data-country 속성을 가진 모든 요소를 찾습니다.
+    #     country_checkbox_elements = country_region_tab.query_selector_all('[data-country]')
+        
+    #     for element in country_checkbox_elements:
+    #         # 각 요소의 data-country 속성 값을 소문자로 가져옵니다.
+    #         country = element.get_attribute("data-country").lower()
+
+    #         if country in selected_countries_lowercase_list:
+    #             # 나라 리스트에 포함되면 체크합니다.
+    #             element.get_by_role()
+    #         else:
+    #             # 나라 리스트에 포함되지 않으면 언체크합니다.
+    #             if element.is_checked():
+    #                 element.uncheck()
+    
+    def check_countries(self, selected_countries):
+        # 혹시 모를 문자 차이에 대비해 selected_countries 요소를 전부 소문자로 변경함.
+        selected_countries_lowercase_list = [item.lower() for item in selected_countries]
+        
+        country_region_tab_selector = '.dfx-calendarTopBar__filterFull > .dfx-calendarTopBar__multipleCheckboxesWithIconFilterCheckboxes'
+        self.page.wait_for_selector(selector=country_region_tab_selector, state='attached')
+        print('찾았네염')
+        # 일단 컨트리/리전 탭 셀렉터를 통해 페이지에서 컨트리/리전 탭을 선택하여 변수에 할당함.
+        country_region_tab = self.page.locator(country_region_tab_selector)
+        self.page.get_by_role
+        
+        # data-country 속성을 가진 모든 요소를 찾습니다.
+        country_checkbox_elements = country_region_tab.query_selector_all('[data-country]')
+        
+        for element in country_checkbox_elements:
+            # 각 요소의 data-country 속성 값을 소문자로 가져옵니다.
+            country = element.get_attribute("data-country").lower()
+
+            if country in selected_countries_lowercase_list:
+                # 나라 리스트에 포함되면 체크합니다.
+                element.get_by_role()
+            else:
+                # 나라 리스트에 포함되지 않으면 언체크합니다.
+                if element.is_checked():
+                    element.uncheck()
 
     def get_scraped_data(self):
         # 셀렉터를 기반으로 요소가 로드될 때까지 기다림
@@ -105,7 +157,7 @@ class EconomicCalendarManager:
             
         return event_data
 
-    def scrape_economic_calendar(self):
+    def scrape_economic_calendar(self, selected_countries):
         with sync_playwright() as p:
             # self.browser = p.chromium.launch()
             self.browser = p.chromium.launch(headless=False)
@@ -114,8 +166,12 @@ class EconomicCalendarManager:
             today_tomorrow_event_list = []
             #page today
             self.page.goto('https://www.dailyfx.com/economic-calendar#today')
+            #물론 체크는 처음만 해주면 되겠지
+            self.check_countries(selected_countries)
+            #그냥 새로 고침을 하면 웨이팅을 이미 했는지 안했는지 애매하지 않지.
+            self.page.reload()
             
-            today_tomorrow_event_list.extend(self.get_scraped_data(self.page))
+            today_tomorrow_event_list.extend(self.get_scraped_data())
                 
             #page tomorrow
             self.page.goto('https://www.dailyfx.com/economic-calendar#tomorrow')
@@ -134,7 +190,5 @@ class EconomicCalendarManager:
         
 
     # 스크래핑 함수 실행
-
-    economic_calendar_df = scrape_economic_calendar()
-    show_message()
-    print(economic_calendar_df)
+    
+    
