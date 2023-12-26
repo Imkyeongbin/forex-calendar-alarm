@@ -44,7 +44,7 @@ class SettingsManager:
             countries_frame.pack(side='left', fill='x', expand=True, padx=5)
 
             for country in countries:
-                country_value = country.split(sep=" ")[1]
+                country_value = country.split(" ", 1)[1]
                 var = tk.BooleanVar(value=country_value in self.default_selected_countries)
                 cb = ttk.Checkbutton(countries_frame, text=country, variable=var)
                 cb.pack(side='left', padx=2, pady=2)
